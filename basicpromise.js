@@ -68,6 +68,8 @@ class MyPromise {
 
 
   then(resolveFn, rejectFn) {
+    resolveFn = typeof resolveFn == 'function' ? resolveFn : (val) => val
+    rejectFn = typeof rejectFn == 'function' ? rejectFn : (res) => { throw res }
     const promise2 = new MyPromise((resolve, reject) => {
       if (this._state == RESOLVED) {
         setTimeout(() => {
@@ -110,33 +112,16 @@ class MyPromise {
   }
 }
 
-const p = new MyPromise((resolve, reject) => {
-  setTimeout(() => {
-    console.log('sss')
-    resolve(1)
-  }, 1)
+MyPromise.defer = () => {
+  let dfd = {}
 
-
-})
-p.then(res => {
-  return new MyPromise((resolve, reject) => {
-    resolve(new MyPromise((resolve, reject) => {
-      resolve('ssjdsjdkjskdjlsj')
-    }))
+  dfd.promise = new MyPromise((resolve, reject) => {
+    dfd.resolve = resolve
+    dfd.reject = reject
   })
-},
-  err => {
-    console.log('000n', err)
-  }
-).then(data => {
-  console.log('111y', data)
-  throw Error('ssssssscuocu');
 
-}, err => {
-  console.log('111no', err)
+  return dfd
+}
 
-}).then(res => {
-  console.log('222y', res)
-}, err => {
-  console.log('2222n', err)
-})
+module.exports = MyPromise
+
