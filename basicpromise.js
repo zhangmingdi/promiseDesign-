@@ -1,3 +1,5 @@
+const { type } = require("os")
+
 const PENDING = 'PENDING'
 const RESOLVED = 'RESOLVED'
 const REJECTED = 'REJECTED'
@@ -122,6 +124,51 @@ MyPromise.defer = () => {
 
   return dfd
 }
+
+function isPromise(obj) {
+  if (typeof obj === 'object' && typeof obj != null || typeof obj === 'function') {
+    if (obj.then && typeof obj.then === 'function') {
+      return true
+    } else {
+      return false
+    }
+  } else {
+    return false
+  }
+
+}
+
+MyPromise.All = function (arr) {
+  let resArr = []
+  const dfd = MyPromise.defer()
+  let index = 0
+  function arrFnComplete(j, val) {
+    ++index
+    resArr[j] = val
+    if (index === (arr.length)) {
+      dfd.resolve(resArr)
+    }
+  }
+
+  for (let i = 0; i < arr.length; i++) {
+    const current = arr[i]
+    const ispromise = isPromise(current)
+    if (ispromise) {
+      current.then(res => {
+        arrFnComplete(i, res)
+      }, err => {
+        dfd.reject(err)
+      })
+    } else {
+      arrFnComplete(i, current)
+    }
+
+  }
+
+  return dfd.promise
+
+}
+
 
 module.exports = MyPromise
 

@@ -43,11 +43,21 @@ const fsPromise = file => {
   return dfd.promise
 }
 
-const p = fsPromise('hello.txt')
+// const p = fsPromise('hello.txt')
 
-p.then(res => {
-  console.log('resolve', res)
+// p.then(res => {
+//   console.log('resolve', res)
 
-}, err => {
-  console.log('err', err)
-})
+// }, err => {
+//   console.log('err', err)
+// })
+
+MyPromise.All([1, fsPromise('hello.txt'), fsPromise('hellow2.txt'), 4, 5, 6, 7])
+  .then(arr => {
+    console.log('arrRes', arr)
+  }, err => {
+    console.log('arrRes', err)
+
+  })
+
+
